@@ -1214,6 +1214,10 @@ function renderResult(result) {
 function saveAsImage() {
   const watermark = document.getElementById('watermark');
   const resultContent = document.getElementById('resultContent');
+  const saveBtn = document.querySelector('.save-btn');
+  const oldText = saveBtn.textContent;
+  saveBtn.textContent = '生成中...';
+  saveBtn.disabled = true;
 
   watermark.style.display = 'block';
 
@@ -1224,12 +1228,33 @@ function saveAsImage() {
     scrollY: -window.scrollY
   }).then(canvas => {
     watermark.style.display = 'none';
-    const link = document.createElement('a');
-    link.download = 'mbti-result.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+
+    const prev = document.getElementById('imagePreview');
+    if (prev) prev.remove();
+
+    const img = document.createElement('img');
+    img.src = canvas.toDataURL('image/png');
+    img.style.cssText = 'width:100%;border-radius:14px;border:1px solid #e8e8e4;margin-top:16px;';
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'imagePreview';
+    wrapper.style.cssText = 'padding:0 20px;text-align:center;';
+
+    const tip = document.createElement('p');
+    tip.textContent = '长按上方图片保存到相册';
+    tip.style.cssText = 'font-size:0.85rem;color:#888;margin:12px 0 0;';
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(tip);
+    resultContent.parentElement.insertBefore(wrapper, document.querySelector('.result-actions'));
+
+    saveBtn.textContent = '已生成，长按图片保存';
+    saveBtn.disabled = false;
+    img.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }).catch(() => {
     watermark.style.display = 'none';
+    saveBtn.textContent = oldText;
+    saveBtn.disabled = false;
   });
 }
 </script>
