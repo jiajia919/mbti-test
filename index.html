@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI 人格测试</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #fafafa;
+  color: #1a1a1a;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.page {
+  display: none;
+  min-height: 100vh;
+}
+
+.page.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========== 首页 ========== */
+#intro {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+#intro h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+#intro .subtitle {
+  font-size: 1.1rem;
+  color: #888;
+  margin-bottom: 48px;
+}
+
+#intro .start-btn {
+  display: inline-block;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 16px 48px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+#intro .start-btn:hover {
+  background: #333;
+}
+
+#intro .disclaimer {
+  margin-top: 48px;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* ========== 答题页 ========== */
+#quiz {
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+.progress-bar-wrapper {
+  position: sticky;
+  top: 0;
+  background: #fafafa;
+  padding: 16px 0 12px;
+  z-index: 10;
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 8px;
+  text-align: right;
+}
+
+.progress-track {
+  width: 100%;
+  height: 4px;
+  background: #e8e8e4;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #000;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.question-card {
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  padding: 36px 32px;
+  margin-top: 24px;
+  flex: 1;
+}
+
+.question-label {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.question-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1.5px solid #e8e8e4;
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 1rem;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+  color: #1a1a1a;
+}
+
+.option-btn:hover {
+  background: #f5f5f5;
+}
+
+.option-btn.selected {
+  border-color: #000;
+  background: #f5f5f5;
+}
+
+.quiz-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fafafa;
+  border-top: 1px solid #e8e8e4;
+  padding: 16px 20px;
+  z-index: 10;
+}
+
+.quiz-nav .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prev-btn {
+  background: none;
+  border: 1.5px solid #e8e8e4;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #1a1a1a;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+}
+
+.prev-btn:hover {
+  border-color: #000;
+  background: #f5f5f5;
+}
+
+.prev-btn.hidden {
+  visibility: hidden;
+}
+
+.submit-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+  display: none;
+}
+
+.submit-btn:hover {
+  background: #333;
+}
+
+.submit-btn.show {
+  display: block;
+}
+
+/* ========== 加载页 ========== */
+#loading {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.loading-text {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #000;
+  border-radius: 50%;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: translateY(-12px);
+    opacity: 1;
+  }
+}
+
+/* ========== 结果页 ========== */
+#results {
+  padding: 40px 0 60px;
+  min-height: auto;
+}
+
+#resultContent {
+  background: #fafafa;
+  padding: 0 20px 40px;
+}
+
+.result-main-card {
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  padding: 36px 32px;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.result-emoji {
+  font-size: 3.6rem;
+  flex-shrink: 0;
+}
+
+.result-info h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.result-code {
+  font-size: 1.1rem;
+  color: #888;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.result-desc {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+.dims-card {
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+}
+
+.dims-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.dim-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.dim-row:last-child {
+  margin-bottom: 0;
+}
+
+.dim-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  width: 56px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.dim-label.right {
+  text-align: left;
+}
+
+.dim-bar-track {
+  flex: 1;
+  height: 10px;
+  background: #e8e8e4;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.dim-bar-fill {
+  height: 100%;
+  background: #000;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+.dim-pct {
+  font-size: 0.85rem;
+  color: #888;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.dim-pct.left {
+  text-align: right;
+}
+
+.dim-pct.right {
+  text-align: left;
+}
+
+.traits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.traits-card {
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.traits-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.traits-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.traits-card li {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.6;
+  padding: 4px 0;
+}
+
+.traits-card li::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.celebs-card {
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+}
+
+.celebs-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.celebs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.celeb-tag {
+  background: #f5f5f5;
+  border: 1px solid #e8e8e4;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.tip-card {
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  padding: 24px 32px;
+  margin-bottom: 24px;
+}
+
+.tip-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.tip-card p {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.8;
+}
+
+.watermark {
+  display: none;
+  text-align: center;
+  padding: 20px 0 8px;
+  border-top: 1px solid #e8e8e4;
+  margin-top: 16px;
+}
+
+.watermark .wm-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #888;
+}
+
+.watermark .wm-link {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 0 20px;
+  margin-top: 24px;
+}
+
+.save-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.save-btn:hover {
+  background: #333;
+}
+
+.restart-btn {
+  background: #fff;
+  color: #1a1a1a;
+  border: 1.5px solid #e8e8e4;
+  border-radius: 8px;
+  padding: 14px 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+}
+
+.restart-btn:hover {
+  border-color: #000;
+  background: #f5f5f5;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 600px) {
+  #intro h1 {
+    font-size: 1.8rem;
+  }
+
+  .question-card {
+    padding: 28px 20px;
+  }
+
+  .question-text {
+    font-size: 1.15rem;
+  }
+
+  .result-main-card {
+    flex-direction: column;
+    padding: 28px 20px;
+    gap: 16px;
+  }
+
+  .traits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dims-card,
+  .celebs-card,
+  .tip-card {
+    padding: 20px;
+  }
+
+  .result-actions {
+    flex-direction: column;
+  }
+
+  .result-actions button {
+    width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- 首页 -->
+<div id="intro" class="page active">
+  <div class="container">
+    <h1>你是什么人格？</h1>
+    <p class="subtitle">28 道有趣的题目，测出你的 MBTI 类型</p>
+    <button class="start-btn" onclick="startTest()">开始测试</button>
+    <p class="disclaimer">本测试仅供娱乐，请勿当真</p>
+  </div>
+</div>
+
+<!-- 答题页 -->
+<div id="quiz" class="page">
+  <div class="container">
+    <div class="progress-bar-wrapper">
+      <div class="progress-text" id="progressText">1/28</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+    <div id="questionArea"></div>
+  </div>
+  <div class="quiz-nav">
+    <div class="container">
+      <button class="prev-btn hidden" id="prevBtn" onclick="prevQuestion()">上一题</button>
+      <button class="submit-btn" id="submitBtn" onclick="submitTest()">查看结果</button>
+    </div>
+  </div>
+</div>
+
+<!-- 加载页 -->
+<div id="loading" class="page">
+  <div>
+    <div class="loading-text">正在分析你的人格...</div>
+    <div class="dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 结果页 -->
+<div id="results" class="page">
+  <div class="container">
+    <div id="resultContent">
+      <!-- 动态渲染 -->
+    </div>
+    <div class="result-actions">
+      <button class="save-btn" onclick="saveAsImage()">保存结果图片</button>
+      <button class="restart-btn" onclick="startTest()">重新测试</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    id: 1,
+    text: "凌晨三点你还没睡，手机弹出一条消息：\"楼下有只猫在叫，疑似在开演唱会\"，你的反应是？",
+    dim: "EI",
+    options: [{"text": "穿上拖鞋冲下去看，顺便拍个抖音", "score": 3}, {"text": "看一眼窗外，默默点个赞然后继续刷手机", "score": 2}, {"text": "关窗，塞耳塞，这个世界与我无关", "score": 1}]
+  },
+  {
+    id: 2,
+    text: "你搬进新家，发现阳台外面能看到一棵特别大的树，你第一反应是？",
+    dim: "SN",
+    options: [{"text": "不错，夏天能遮阳，省点空调费", "score": 3}, {"text": "挺好的，看着挺舒服", "score": 2}, {"text": "这棵树看了多少年的人间故事了……会不会有松鼠住在里面", "score": 1}]
+  },
+  {
+    id: 3,
+    text: "你点了一杯奶茶，喝了一口发现是别人的单，但是比你点的贵，这时候你会？",
+    dim: "TF",
+    options: [{"text": "赚到了，闷声喝完，商业互换", "score": 3}, {"text": "犹豫三秒，然后跟店员说一声", "score": 2}, {"text": "立刻归还，万一那个人正在期待他的奶茶呢", "score": 1}]
+  },
+  {
+    id: 4,
+    text: "周五下午老板突然说\"下周一交个方案\"，你会？",
+    dim: "JP",
+    options: [{"text": "当场掏出笔记本列大纲，周五晚上搞定初稿", "score": 3}, {"text": "先记下来，周末抽空弄弄", "score": 2}, {"text": "周日晚上十一点打开电脑，灵感这东西急不来的", "score": 1}]
+  },
+  {
+    id: 5,
+    text: "电梯里只有你和一个陌生人，电梯突然停了，你会？",
+    dim: "EI",
+    options: [{"text": "主动搭话：\"哥们，看来咱俩命中注定要聊一会儿了\"", "score": 3}, {"text": "默默掏出手机看看有没有信号，偶尔对视一下尬笑", "score": 2}, {"text": "面朝墙角站好，假装自己是一盆绿植", "score": 1}]
+  },
+  {
+    id: 6,
+    text: "朋友带你去一家新开的餐厅，菜单上有一道叫\"老板娘的秘密\"的菜，你会？",
+    dim: "SN",
+    options: [{"text": "先问服务员这道菜具体是什么食材、怎么做的", "score": 3}, {"text": "看看隔壁桌有没有人点了，瞄一眼实物", "score": 2}, {"text": "不管了直接点，人生就是要充满惊喜", "score": 1}]
+  },
+  {
+    id: 7,
+    text: "好朋友跟你吐槽工作不顺心想裸辞，你第一反应是？",
+    dim: "TF",
+    options: [{"text": "帮他分析存款够撑几个月、行业形势怎么样", "score": 3}, {"text": "先听他说完，然后提一两个建议", "score": 2}, {"text": "\"要不咱俩先去吃顿好的，难受的事吃饱了再说\"", "score": 1}]
+  },
+  {
+    id: 8,
+    text: "你终于等到年假了，距离出发还有两周，你现在的状态是？",
+    dim: "JP",
+    options: [{"text": "攻略已做好，机票酒店门票全订完，连每天几点起床都规划了", "score": 3}, {"text": "大方向定了，细节到时候再说", "score": 2}, {"text": "去哪还没定呢，出发前一晚订机票也不迟吧", "score": 1}]
+  },
+  {
+    id: 9,
+    text: "公司团建要玩狼人杀，你会？",
+    dim: "EI",
+    options: [{"text": "主动竞选法官或者上来就自爆身份带节奏", "score": 3}, {"text": "安静观察，关键时刻发言投票", "score": 2}, {"text": "能不能申请当观众，我给你们端茶倒水", "score": 1}]
+  },
+  {
+    id: 10,
+    text: "地铁上你看到一个人鞋子穿反了，你的内心活动是？",
+    dim: "SN",
+    options: [{"text": "穿反了……走路不磨脚吗，这人心真大", "score": 3}, {"text": "看了一眼，没太在意", "score": 2}, {"text": "他是不是今早经历了什么惊天动地的事才会穿反鞋出门", "score": 1}]
+  },
+  {
+    id: 11,
+    text: "室友/伴侣做了一顿饭，味道一言难尽，你会？",
+    dim: "TF",
+    options: [{"text": "\"盐放多了，下次少放一半，火候也要注意\"", "score": 3}, {"text": "一边吃一边说\"还行还行\"，然后默默多喝两口水", "score": 2}, {"text": "\"天哪你居然亲手做了饭！我好感动！\"（含泪吃完）", "score": 1}]
+  },
+  {
+    id: 12,
+    text: "你网购了一堆东西，快递到了五个，你会？",
+    dim: "JP",
+    options: [{"text": "按下单顺序一个一个拆，拆完顺手把纸箱折好归类", "score": 3}, {"text": "挑最期待的先拆，其他等会儿再说", "score": 2}, {"text": "全堆在门口，这两天想起来了就拆一个", "score": 1}]
+  },
+  {
+    id: 13,
+    text: "你在咖啡厅工作，旁边的人在大声打电话，你会？",
+    dim: "EI",
+    options: [{"text": "忍不住搭个话：\"哥们声音小点呗\"，顺便聊两句", "score": 3}, {"text": "戴上耳机默默忍受，偶尔翻个白眼", "score": 2}, {"text": "二话不说换个角落的位子，最好周围三米没有人", "score": 1}]
+  },
+  {
+    id: 14,
+    text: "你在超市看到一种从没见过的水果，包装上写着\"口感神秘\"，你会？",
+    dim: "SN",
+    options: [{"text": "先扫码查一下是什么品种、产地、怎么吃", "score": 3}, {"text": "看看价格，不贵就买一个试试", "score": 2}, {"text": "立刻放进购物车，\"口感神秘\"四个字已经说服我了", "score": 1}]
+  },
+  {
+    id: 15,
+    text: "你排了半小时的队，快到你的时候有人插队，你会？",
+    dim: "TF",
+    options: [{"text": "直接指出来：\"不好意思，麻烦排队\"，公平就是公平", "score": 3}, {"text": "皱个眉头看看前后的人有没有人先开口", "score": 2}, {"text": "算了吧，他可能有急事，多等两分钟也没啥", "score": 1}]
+  },
+  {
+    id: 16,
+    text: "你答应了周末帮朋友搬家，但那天早上下暴雨，你会？",
+    dim: "JP",
+    options: [{"text": "说好了就去，已经查好路线了，带上雨衣出发", "score": 3}, {"text": "先问朋友要不要改天，看对方态度决定", "score": 2}, {"text": "发消息说\"这雨也太大了吧\"，看朋友怎么接话再决定去不去", "score": 1}]
+  },
+  {
+    id: 17,
+    text: "朋友聚会上有一桌子你不认识的人，你会？",
+    dim: "EI",
+    options: [{"text": "坐下来先做自我介绍，十分钟后就跟每个人都聊上了", "score": 3}, {"text": "先找认识的人坐旁边，慢慢融入话题", "score": 2}, {"text": "全程跟手机做朋友，等朋友来了再说话", "score": 1}]
+  },
+  {
+    id: 18,
+    text: "你做了一个特别离谱的梦，醒来之后你会？",
+    dim: "SN",
+    options: [{"text": "想了两秒觉得太荒谬了，该起床起床", "score": 3}, {"text": "挺有意思的，跟朋友讲讲当个笑话", "score": 2}, {"text": "躺在床上反复回味细节，思考梦境在暗示什么人生真相", "score": 1}]
+  },
+  {
+    id: 19,
+    text: "你在网上看到两个陌生人在评论区激烈吵架，你会？",
+    dim: "TF",
+    options: [{"text": "分析双方论点，找出谁的逻辑有漏洞", "score": 3}, {"text": "吃瓜看戏，偶尔截图发给朋友", "score": 2}, {"text": "突然有点担心输的那方会不会心情不好", "score": 1}]
+  },
+  {
+    id: 20,
+    text: "出门旅游的时候，你的行李箱通常是什么状态？",
+    dim: "JP",
+    options: [{"text": "分装袋归类，衣服按天数叠好，还打印了清单", "score": 3}, {"text": "大概收拾一下，想到啥塞啥", "score": 2}, {"text": "出发前半小时才开始收拾，把衣柜随手抓一把塞进去", "score": 1}]
+  },
+  {
+    id: 21,
+    text: "你在路上偶遇一个半年没联系的老同学，你会？",
+    dim: "EI",
+    options: [{"text": "\"哇！好久不见！走走走吃个饭叙叙旧！\"", "score": 3}, {"text": "打个招呼寒暄几句，说声\"下次约\"然后各走各路", "score": 2}, {"text": "假装在看手机，祈祷对方没看到自己", "score": 1}]
+  },
+  {
+    id: 22,
+    text: "你刷到一条新闻说\"科学家发现一颗可能宜居的行星\"，你的反应是？",
+    dim: "SN",
+    options: [{"text": "看看离地球多远、温度多少、有没有水，评估靠不靠谱", "score": 3}, {"text": "挺有意思的，点个收藏以后再看", "score": 2}, {"text": "已经在脑补星际移民后的社会制度和外星邻居了", "score": 1}]
+  },
+  {
+    id: 23,
+    text: "你在二手平台卖东西，买家说\"能不能便宜点，我是学生党\"，你会？",
+    dim: "TF",
+    options: [{"text": "价格已经很低了，不好意思不能再少了，成本在这", "score": 3}, {"text": "象征性减个五块意思一下", "score": 2}, {"text": "行吧行吧给你个学生价，读书不容易", "score": 1}]
+  },
+  {
+    id: 24,
+    text: "手机提醒你信用卡账单日是明天，你会？",
+    dim: "JP",
+    options: [{"text": "早就设好了自动还款，不用操心", "score": 3}, {"text": "看到提醒赶紧打开app还了", "score": 2}, {"text": "嗯知道了……先刷完这个视频再说吧，应该来得及", "score": 1}]
+  },
+  {
+    id: 25,
+    text: "你在飞机上，旁边坐了一个外国人，你会？",
+    dim: "EI",
+    options: [{"text": "主动搭话练口语，落地前交换了社交账号", "score": 3}, {"text": "对方找你说话就聊两句，不主动不拒绝", "score": 2}, {"text": "全程耳机降噪模式，眼神都不带飘过去的", "score": 1}]
+  },
+  {
+    id: 26,
+    text: "下班路上你看到天边出现了一片特别好看的晚霞，你会？",
+    dim: "SN",
+    options: [{"text": "拍张照发朋友圈，配文\"今天天气不错\"", "score": 3}, {"text": "驻足看一会儿，心情变好了", "score": 2}, {"text": "突然开始思考光的散射原理，以及为什么美好的东西总是短暂的", "score": 1}]
+  },
+  {
+    id: 27,
+    text: "你发现同事在周报里写了一个明显的数据错误，你会？",
+    dim: "TF",
+    options: [{"text": "私聊他指出来，数据就是数据，错了该改", "score": 3}, {"text": "随口提一句\"这个数字你再确认一下\"", "score": 2}, {"text": "先想想他最近是不是压力太大了，找个时机委婉提一下", "score": 1}]
+  },
+  {
+    id: 28,
+    text: "你打算周末大扫除，结果刚收拾了一半发现了一本旧相册，你会？",
+    dim: "JP",
+    options: [{"text": "放下相册继续打扫，看完才看，事情要一件一件做", "score": 3}, {"text": "翻几页看看然后放回去，提醒自己还有正事", "score": 2}, {"text": "一屁股坐地上翻了两小时，大扫除？什么大扫除？", "score": 1}]
+  }
+];
+const TYPES = {
+  "INTJ": {
+    name: "建筑师",
+    emoji: "🧠",
+    desc: "你是那种下棋永远想五步以后的人。别人还在纠结中午吃什么，你已经规划好了未来三年的人生路线。你的大脑像一台永不停歇的策略引擎，任何事情到你手里都会被拆解成可执行的方案。虽然朋友不多，但每一个都是精挑细选的精锐部队。",
+    strengths: ["战略思维强，擅长长期规划", "独立自主，不随波逐流", "学习能力强，追求深度理解", "执行力惊人，说到做到"],
+    weaknesses: ["容易显得高冷，社交场合偶尔尴尬", "对自己和他人要求都太高", "不善表达情感，被误解为冷漠", "有时过于自信，听不进不同意见"],
+    celebs: ["埃隆·马斯克", "尼采", "诸葛亮", "甘道夫（指环王）"],
+    tip: "你的脑子是你最大的武器，但偶尔也让心做主吧。世界不是一盘棋，有些人值得你放下计算去真诚相待。"
+  },
+  "INTP": {
+    name: "逻辑学家",
+    emoji: "🔬",
+    desc: "你的脑子里住着一个永远在提问的小人：为什么？怎么回事？如果反过来呢？你是那种能在凌晨三点突然想通一个问题然后激动得睡不着的人。对你来说，世界就是一个超大号的解谜游戏，而你永远不会厌倦。",
+    strengths: ["逻辑能力超强，分析问题一针见血", "创造力丰富，脑洞比黑洞还大", "对知识有纯粹的热爱", "能快速理解复杂概念"],
+    weaknesses: ["想法太多，行动太少", "社交技能偶尔需要系统更新", "对无聊的事情完全没有耐心", "房间乱得像被搜查过"],
+    celebs: ["爱因斯坦", "比尔·盖茨", "苏格拉底", "蝙蝠侠"],
+    tip: "你的想法够多了，试试把其中一个变成现实吧。完美的计划不如一个60分的行动。记得偶尔出门晒晒太阳。"
+  },
+  "ENTJ": {
+    name: "指挥官",
+    emoji: "👑",
+    desc: "你天生就是那个站在白板前画战略图的人。团队里有你在，大家连方向都不用找。你说话自带BGM，走路带风，开会的时候所有人都在等你先发言。你对效率的追求已经到了一种近乎信仰的程度。",
+    strengths: ["天生领导力，团队自然看向你", "决策果断，从不拖泥带水", "目标明确，执行力爆表", "善于激励他人"],
+    weaknesses: ["有时候太强势，开会变成一言堂", "不太理解为什么有人需要\"慢慢来\"", "工作狂倾向严重", "在感情里也习惯性地当CEO"],
+    celebs: ["史蒂夫·乔布斯", "拿破仑", "曹操", "米兰达（穿普拉达的女魔头）"],
+    tip: "你是天生的领袖没错，但领袖最厉害的技能不是发号施令，而是倾听。偶尔让别人也当一回主角。"
+  },
+  "ENTP": {
+    name: "辩论家",
+    emoji: "⚡",
+    desc: "你就是那个在任何话题上都能跟人辩三百回合的人，而且还乐在其中。你的嘴皮子是经过实战训练的，脑回路比过山车还刺激。无聊是你最大的敌人，新鲜感是你的氧气。你有一百个创业点子，虽然目前还没开始执行第一个。",
+    strengths: ["思维敏捷，反应快到令人发指", "创意无限，点子多到可以批发", "口才了得，说服力MAX", "适应能力强，到哪都能混开"],
+    weaknesses: ["三分钟热度是你的老朋友", "喜欢抬杠，有时把天聊死", "细节？不存在的", "承诺这件事对你来说比较困难"],
+    celebs: ["本杰明·富兰克林", "钢铁侠（托尼·斯塔克）", "小丑（蝙蝠侠）", "韩非子"],
+    tip: "你的脑子是个超级引擎，但偶尔也需要踩刹车。不是每句话都需要反驳，不是每个项目都要开始。试试把一件事做完？"
+  },
+  "INFJ": {
+    name: "提倡者",
+    emoji: "🌟",
+    desc: "你是人群中最安静的那个，却也是看得最透的那个。你能在别人还没开口的时候就感受到他们的情绪，堪称人形情感雷达。你的理想主义不是空想，而是真的会用行动去改变些什么。虽然你的社交电池容量不大，但充满电的你能量惊人。",
+    strengths: ["洞察力惊人，看人极准", "富有同理心，天生的倾听者", "有理想且愿意付诸行动", "创造力与深度兼具"],
+    weaknesses: ["过度共情，容易吸收别人的负能量", "完美主义导致拖延", "太在意别人的感受", "需要大量独处时间来充电"],
+    celebs: ["马丁·路德·金", "特蕾莎修女", "尼尔·阿姆斯特朗", "甄嬛"],
+    tip: "你对世界的善意是珍贵的，但记得留一些温柔给自己。不是所有人都值得你掏心掏肺，学会说\"不\"也是一种成长。"
+  },
+  "INFP": {
+    name: "调停者",
+    emoji: "🦋",
+    desc: "你的内心世界比外面的世界精彩一万倍。你可能正在开会，但脑子里正在写一首诗、构思一部小说、或者回忆昨天那只流浪猫的眼神。你对美和意义有着近乎执拗的追求，活在一个只有你自己能理解的频率上。",
+    strengths: ["共情能力天花板级别", "创造力丰富，文艺细胞爆棚", "忠于自我，不轻易妥协价值观", "善于理解他人的深层需求"],
+    weaknesses: ["现实世界对你来说有点吵", "容易陷入自我怀疑的漩涡", "做决定的速度堪比树懒", "理想和现实的落差让你经常emo"],
+    celebs: ["莎士比亚", "J.R.R.托尔金", "威廉·莎士比亚", "千与千寻的千寻"],
+    tip: "你的敏感是天赋不是弱点。但梦想再美也要落地，试着把脑海里的那些好点子写下来，也许世界正在等你的故事。"
+  },
+  "ENFJ": {
+    name: "主人公",
+    emoji: "🌞",
+    desc: "你是那种走进房间就能让气氛变好的人。你天生就知道怎么让每个人都感到被重视，社交场合就是你的主场。你热情、有感染力，朋友有困难第一个想到的就是你。你坚信每个人都有闪光点，而你特别擅长把它们找出来。",
+    strengths: ["社交天赋满点，走哪都是焦点", "善于激励和鼓舞他人", "组织协调能力一流", "真诚且有责任心"],
+    weaknesses: ["太在意别人的评价", "容易过度付出，忘了照顾自己", "有时候太理想主义", "不擅长拒绝别人"],
+    celebs: ["奥巴马", "孔子", "奥普拉·温弗瑞", "白雪公主"],
+    tip: "你是天生的发光体，但太阳也需要休息。不是所有人都需要你去拯救，偶尔当个观众也挺好的。"
+  },
+  "ENFP": {
+    name: "竞选者",
+    emoji: "🎉",
+    desc: "你是行走的快乐源泉，自带感染力光环。你的好奇心比猫还旺盛，兴趣爱好多到简历写不下。跟你聊天就像坐过山车——话题从宇宙起源聊到楼下煎饼果子摊只需要三分钟。你相信生活应该是一场冒险，而不是一份待办清单。",
+    strengths: ["热情似火，感染力爆棚", "创造力和想象力无边界", "善于发现新可能性", "真诚、热心，人缘超好"],
+    weaknesses: ["注意力像蝴蝶一样飘来飘去", "讨厌规则和条条框框", "想法太多落地太少", "情绪波动有点大"],
+    celebs: ["小罗伯特·唐尼", "罗宾·威廉姆斯", "海贼王路飞", "安妮·海瑟薇"],
+    tip: "你的热情是你最大的魅力，但试试把这份热情集中在一两件事上？不需要把每扇门都打开，找到那扇对的门然后走进去。"
+  },
+  "ISTJ": {
+    name: "物流师",
+    emoji: "📋",
+    desc: "你是团队里那个默默干活、最后发现活全是你干的人。你做事靠谱程度堪比瑞士手表，交给你的任务从来不需要催第二次。你的人生信条是\"说到做到\"，你的日历比大多数人的人生规划都详细。",
+    strengths: ["超级靠谱，堪称人形保险箱", "做事有条理，效率极高", "责任心强，从不半途而废", "记忆力好，细节控"],
+    weaknesses: ["变通能力有待提高", "有时太固执，不愿尝试新方法", "表达感情不太在行", "对计划外的事情会焦虑"],
+    celebs: ["沃伦·巴菲特", "乔治·华盛顿", "海尔兄弟的哥哥", "赵云"],
+    tip: "你是世界运转的基石，但人生不全是待办清单。偶尔允许自己即兴发挥一下，计划外的惊喜也可以很美好。"
+  },
+  "ISFJ": {
+    name: "守卫者",
+    emoji: "🛡️",
+    desc: "你是那种默默记住所有人生日、知道每个朋友过敏源的人。你的关心不是嘴上说说，而是真的会在你生病时出现在门口端着一碗粥。你安静、温暖、靠谱，是所有人的安全感来源，虽然你自己可能不这么觉得。",
+    strengths: ["温暖体贴，记得每个人的小细节", "耐心十足，是最好的倾听者", "做事踏实可靠", "默默付出不求回报"],
+    weaknesses: ["太委屈自己成全别人", "不善于表达自己的需求", "害怕冲突，有时候过度隐忍", "对变化的适应比较慢"],
+    celebs: ["碧昂斯", "德蕾莎修女", "维尼熊", "刘备"],
+    tip: "你为别人做得够多了，现在轮到照顾自己了。学会说\"我也需要帮助\"不丢人，你的感受和别人的一样重要。"
+  },
+  "ESTJ": {
+    name: "总经理",
+    emoji: "📊",
+    desc: "你天生就是管事的料。无论是公司项目还是朋友聚餐，只要有你在场，事情就会自动变得井井有条。你说话直来直去，做事雷厉风行，效率就是你的中间名。你相信规则存在是有道理的，而且你特别擅长让别人也相信这一点。",
+    strengths: ["组织能力一流，天生管理者", "做事高效，从不拖延", "说话直接，不绕弯子", "责任心强，值得信赖"],
+    weaknesses: ["有时太强硬，不太考虑别人感受", "灵活性不足，规则至上", "控制欲偶尔上线", "对\"低效\"的事情缺乏耐心"],
+    celebs: ["希拉里·克林顿", "法官包拯", "王熙凤", "萨达姆"],
+    tip: "效率很重要，但不是一切。有时候慢下来听听别人的想法，可能会发现更好的方案。领导力的最高境界是让别人心甘情愿地跟你走。"
+  },
+  "ESFJ": {
+    name: "执政官",
+    emoji: "🤝",
+    desc: "你是朋友圈里的社交粘合剂。谁跟谁闹矛盾了找你，聚会订餐厅找你，需要情感支持还是找你。你天生就知道怎么让周围的人开心，你的朋友圈点赞数说明一切。你的人生目标之一就是让每个人都过得好。",
+    strengths: ["社交达人，人脉广泛", "热心肠，乐于助人", "组织活动的能力满分", "善于照顾他人感受"],
+    weaknesses: ["太在乎别人的看法", "不善于处理冲突", "有时候热心过头变成多管闲事", "自己的需求总是排最后"],
+    celebs: ["泰勒·斯威夫特", "休·杰克曼", "哆啦A梦", "贾母"],
+    tip: "你是大家的开心果，但也别忘了问问自己开不开心。真正的和谐不是所有人都满意，而是包括你在内的所有人都被善待。"
+  },
+  "ISTP": {
+    name: "鉴赏家",
+    emoji: "🔧",
+    desc: "你是那种看一眼就能判断这东西哪里坏了、怎么修的人。你酷、冷静、动手能力超强，危机时刻反而是你最从容的时候。你不喜欢被规则束缚，比起讨论方案更喜欢直接上手试。你的人生态度是：少废话，看我操作。",
+    strengths: ["动手能力超强，啥都能修", "冷静理性，危机处理专家", "独立自主，不依赖任何人", "学东西快，一看就会"],
+    weaknesses: ["情感表达约等于零", "讨厌承诺和长期计划", "有时过于冒险", "对无聊的事毫无耐心，包括某些社交"],
+    celebs: ["克林特·伊斯特伍德", "詹姆斯·邦德", "贝爷", "令狐冲"],
+    tip: "你的酷是真的酷，但偶尔让别人靠近一点也不会怎样。不是所有关系都需要保持安全距离，有些人值得你打开心门。"
+  },
+  "ISFP": {
+    name: "探险家",
+    emoji: "🎨",
+    desc: "你活在自己的频率上，安静地欣赏这个世界的美。你可能不爱说话，但你的穿搭、你拍的照片、你做的菜都在替你表达。你不追求轰轰烈烈，只想过一种真实、自在、有美感的生活。你的审美品味让身边的人都有点羡慕。",
+    strengths: ["审美在线，艺术感知力强", "温柔善良，与世无争", "活在当下，享受生活", "忠于自我，从不伪装"],
+    weaknesses: ["太避免冲突，有时候吃亏", "做决定很慢，选择困难症", "不擅长规划未来", "容易低估自己的价值"],
+    celebs: ["鲍勃·迪伦", "迈克尔·杰克逊", "宫崎骏", "林黛玉"],
+    tip: "你的温柔和审美是这个粗糙世界里的一股清流。但别因为害怕冲突就委屈自己，你的声音值得被听到。"
+  },
+  "ESTP": {
+    name: "企业家",
+    emoji: "🏄",
+    desc: "你就是那种别人还在想\"要不要\"的时候你已经在做了的人。你活力四射、反应极快、胆子比天大。你是聚会上最会活跃气氛的人，也是危机中最先站出来的人。你的人生信条是：先干再说，边干边学。",
+    strengths: ["行动力爆表，说干就干", "社交能力强，场子从不冷", "临场应变能力一流", "胆大心细，敢于冒险"],
+    weaknesses: ["冲动消费和冲动决策是家常便饭", "对长期规划不太感冒", "容易忽略别人的感受", "坐不住，一闲下来就焦虑"],
+    celebs: ["唐纳德·特朗普", "麦当娜", "杰克船长", "孙悟空"],
+    tip: "你的冲劲让你走得快，但偶尔停下来想一想能让你走得更远。不是所有事情都需要立刻行动，有时候等一等会有更好的选择。"
+  },
+  "ESFP": {
+    name: "表演者",
+    emoji: "🎭",
+    desc: "你就是那个走到哪里就把派对带到哪里的人。你自带聚光灯效果，笑容有感染力，说话有喜剧天赋。你热爱生活中的每一个瞬间，能把最普通的周末过成一场冒险。你的人生哲学是：人生苦短，及时行乐。",
+    strengths: ["超强的感染力和表现力", "乐观积极，自带快乐光环", "善于社交，到哪都不怕", "活在当下，享受每一刻"],
+    weaknesses: ["难以专注于一件事", "冲动消费的冠军选手", "逃避严肃和负面的话题", "长期规划约等于不存在"],
+    celebs: ["玛丽莲·梦露", "威尔·史密斯", "哈利·波特的罗恩", "猪八戒"],
+    tip: "你的快乐是真实的，也是珍贵的。但生活偶尔需要面对不那么开心的事，逃避不会让问题消失。学会在快乐和责任之间找到平衡。"
+  }
+};
+
+
+let answers = {};
+let currentQuestion = 0;
+let shuffledQuestions;
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startTest() {
+  answers = {};
+  currentQuestion = 0;
+  advancing = false;
+  shuffleQuestions();
+  showPage('quiz');
+  renderQuestion();
+  updateProgress();
+}
+
+function shuffleQuestions() {
+  const groups = { EI: [], SN: [], TF: [], JP: [] };
+  QUESTIONS.forEach(q => {
+    if (groups[q.dim]) {
+      groups[q.dim].push(q);
+    }
+  });
+  Object.keys(groups).forEach(dim => {
+    const arr = groups[dim];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  });
+  const dims = ['EI', 'SN', 'TF', 'JP'];
+  shuffledQuestions = [];
+  const maxLen = Math.max(...Object.values(groups).map(g => g.length));
+  for (let i = 0; i < maxLen; i++) {
+    for (const dim of dims) {
+      if (i < groups[dim].length) {
+        shuffledQuestions.push(groups[dim][i]);
+      }
+    }
+  }
+}
+
+function renderQuestion() {
+  const q = shuffledQuestions[currentQuestion];
+  const prevBtn = document.getElementById('prevBtn');
+  const submitBtn = document.getElementById('submitBtn');
+
+  prevBtn.classList.toggle('hidden', currentQuestion === 0);
+  submitBtn.classList.remove('show');
+
+  const selectedIdx = answers[q.id];
+
+  let optionsHtml = '';
+  q.options.forEach((opt, idx) => {
+    const selectedClass = selectedIdx === idx ? ' selected' : '';
+    optionsHtml += `<button class="option-btn${selectedClass}" onclick="selectOption('${q.id}', ${idx})">${opt.text}</button>`;
+  });
+
+  document.getElementById('questionArea').innerHTML = `
+    <div class="question-card">
+      <div class="question-label">第 ${currentQuestion + 1} 题</div>
+      <div class="question-text">${q.text}</div>
+      <div class="options">${optionsHtml}</div>
+    </div>
+  `;
+}
+
+let advancing = false;
+
+function selectOption(questionId, optionIndex) {
+  answers[questionId] = optionIndex;
+
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx === optionIndex);
+  });
+
+  updateProgress();
+
+  if (advancing) return;
+
+  const isLast = currentQuestion === shuffledQuestions.length - 1;
+
+  if (isLast) {
+    const allAnswered = shuffledQuestions.every(q => answers[q.id] !== undefined);
+    if (allAnswered) {
+      advancing = true;
+      setTimeout(() => submitTest(), 400);
+    }
+  } else {
+    advancing = true;
+    setTimeout(() => {
+      currentQuestion++;
+      renderQuestion();
+      updateProgress();
+      advancing = false;
+    }, 400);
+  }
+}
+
+function prevQuestion() {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    renderQuestion();
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const total = shuffledQuestions.length;
+  const answered = Object.keys(answers).length;
+  const current = currentQuestion + 1;
+  document.getElementById('progressText').textContent = `${current}/${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+}
+
+function calcResult() {
+  const dimScores = { EI: 0, SN: 0, TF: 0, JP: 0 };
+
+  shuffledQuestions.forEach(q => {
+    const optIdx = answers[q.id];
+    if (optIdx !== undefined && q.options[optIdx]) {
+      dimScores[q.dim] += q.options[optIdx].score;
+    }
+  });
+
+  let type = '';
+  const dims = {};
+  const dimMap = { EI: ['E', 'I'], SN: ['S', 'N'], TF: ['T', 'F'], JP: ['J', 'P'] };
+
+  for (const dim of ['EI', 'SN', 'TF', 'JP']) {
+    const score = dimScores[dim];
+    const leftPct = Math.round((score - 7) / 14 * 100);
+    const rightPct = 100 - leftPct;
+
+    dims[dim] = { left: leftPct, right: rightPct };
+
+    if (score > 14) {
+      type += dimMap[dim][0];
+    } else {
+      type += dimMap[dim][1];
+    }
+  }
+
+  return { type, dims };
+}
+
+function submitTest() {
+  showPage('loading');
+  setTimeout(() => {
+    const result = calcResult();
+    renderResult(result);
+    showPage('results');
+  }, 1500);
+}
+
+function renderResult(result) {
+  const typeData = TYPES[result.type];
+  if (!typeData) return;
+
+  const dimLabels = {
+    EI: { left: '外向 E', right: '内向 I' },
+    SN: { left: '实感 S', right: '直觉 N' },
+    TF: { left: '思考 T', right: '情感 F' },
+    JP: { left: '判断 J', right: '感知 P' }
+  };
+
+  let dimsHtml = '';
+  for (const dim of ['EI', 'SN', 'TF', 'JP']) {
+    const d = result.dims[dim];
+    const labels = dimLabels[dim];
+    dimsHtml += `
+      <div class="dim-row">
+        <span class="dim-label">${labels.left}</span>
+        <span class="dim-pct left">${d.left}%</span>
+        <div class="dim-bar-track">
+          <div class="dim-bar-fill" style="width: ${d.left}%"></div>
+        </div>
+        <span class="dim-pct right">${d.right}%</span>
+        <span class="dim-label right">${labels.right}</span>
+      </div>
+    `;
+  }
+
+  let strengthsHtml = '';
+  if (typeData.strengths) {
+    typeData.strengths.forEach(s => {
+      strengthsHtml += `<li>${s}</li>`;
+    });
+  }
+
+  let weaknessesHtml = '';
+  if (typeData.weaknesses) {
+    typeData.weaknesses.forEach(w => {
+      weaknessesHtml += `<li>${w}</li>`;
+    });
+  }
+
+  let celebsHtml = '';
+  if (typeData.celebs) {
+    typeData.celebs.forEach(c => {
+      celebsHtml += `<span class="celeb-tag">${c}</span>`;
+    });
+  }
+
+  document.getElementById('resultContent').innerHTML = `
+    <div class="result-main-card">
+      <div class="result-emoji">${typeData.emoji || ''}</div>
+      <div class="result-info">
+        <h2>${typeData.name || result.type}</h2>
+        <div class="result-code">${result.type}</div>
+        <div class="result-desc">${typeData.desc || ''}</div>
+      </div>
+    </div>
+
+    <div class="dims-card">
+      <h3>维度得分</h3>
+      ${dimsHtml}
+    </div>
+
+    <div class="traits-grid">
+      <div class="traits-card">
+        <h3>优势</h3>
+        <ul>${strengthsHtml}</ul>
+      </div>
+      <div class="traits-card">
+        <h3>劣势</h3>
+        <ul>${weaknessesHtml}</ul>
+      </div>
+    </div>
+
+    <div class="celebs-card">
+      <h3>代表人物</h3>
+      <div class="celebs-list">${celebsHtml}</div>
+    </div>
+
+    <div class="tip-card">
+      <h3>友情提示</h3>
+      <p>${typeData.tip || ''}</p>
+    </div>
+
+    <div class="watermark" id="watermark">
+      <div class="wm-title">MBTI 人格测试</div>
+      <div class="wm-link">分享给朋友一起测试吧</div>
+    </div>
+  `;
+}
+
+function saveAsImage() {
+  const watermark = document.getElementById('watermark');
+  const resultContent = document.getElementById('resultContent');
+
+  watermark.style.display = 'block';
+
+  html2canvas(resultContent, {
+    backgroundColor: '#fafafa',
+    scale: 2,
+    useCORS: true,
+    scrollY: -window.scrollY
+  }).then(canvas => {
+    watermark.style.display = 'none';
+    const link = document.createElement('a');
+    link.download = 'mbti-result.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).catch(() => {
+    watermark.style.display = 'none';
+  });
+}
+</script>
+</body>
+</html>
