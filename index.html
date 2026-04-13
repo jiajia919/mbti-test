@@ -127,6 +127,16 @@ body {
   flex: 1;
 }
 
+.question-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+}
+.question-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
 .question-label {
   font-size: 0.85rem;
   color: #888;
@@ -298,6 +308,16 @@ body {
   gap: 28px;
   align-items: flex-start;
   margin-bottom: 24px;
+}
+
+.result-illustration {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+.result-illustration svg {
+  width: 100%;
+  height: 100%;
 }
 
 .result-emoji {
@@ -564,6 +584,11 @@ body {
     gap: 16px;
   }
 
+  .result-illustration {
+    width: 64px;
+    height: 64px;
+  }
+
   .traits-grid {
     grid-template-columns: 1fr;
   }
@@ -641,6 +666,40 @@ body {
 </div>
 
 <script>
+const QUESTION_ICONS = {
+  1: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="22" width="36" height="18" rx="3"/><path d="M12 22v-2a3 3 0 013-3h18a3 3 0 013 3v2"/><circle cx="18" cy="31" r="2"/><circle cx="30" cy="31" r="2"/><path d="M24 8v6M20 10h8"/></svg>',
+  2: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="6" width="24" height="36" rx="4"/><line x1="20" y1="36" x2="28" y2="36"/><circle cx="24" cy="20" r="5"/><path d="M22 18l2 2 3-3"/></svg>',
+  3: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 28c0-8 6-14 14-14h2c8 0 14 6 14 14"/><circle cx="18" cy="26" r="1.5" fill="#1a1a1a"/><circle cx="30" cy="26" r="1.5" fill="#1a1a1a"/><path d="M20 32c2 2 6 2 8 0"/><path d="M10 16l-4-4M38 16l4-4"/></svg>',
+  4: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="14" width="28" height="22" rx="3"/><path d="M10 20h28"/><circle cx="17" cy="17" r="1" fill="#1a1a1a"/><circle cx="23" cy="17" r="1" fill="#1a1a1a"/><path d="M18 28l3-3 4 4 5-5"/><path d="M22 8l2-2 2 2"/></svg>',
+  5: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="32" rx="14" ry="4"/><ellipse cx="24" cy="28" rx="14" ry="4"/><path d="M10 28v-6c0-2.2 6.3-4 14-4s14 1.8 14 4v6"/><path d="M32 14c0 2-3 4-8 4s-8-2-8-4"/></svg>',
+  6: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c-4 0-7 3-7 7 0 5 7 11 7 11s7-6 7-11c0-4-3-7-7-7z"/><circle cx="24" cy="13" r="2.5"/><path d="M14 30h20M14 36h20M18 42h12"/></svg>',
+  7: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="14" r="5"/><circle cx="32" cy="14" r="5"/><path d="M6 34c0-6 4-10 10-10M32 34c0-6 4-10 10-10"/><path d="M20 22h8"/><path d="M24 19v6"/></svg>',
+  8: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="18" width="32" height="22" rx="2"/><path d="M8 26h32"/><rect x="12" y="8" width="8" height="10" rx="1"/><rect x="24" y="12" width="12" height="6" rx="1"/><circle cx="36" cy="22" r="1" fill="#1a1a1a"/></svg>',
+  9: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="10" width="28" height="28" rx="4" transform="rotate(3 24 24)"/><circle cx="17" cy="17" r="2" fill="#1a1a1a"/><circle cx="24" cy="24" r="2" fill="#1a1a1a"/><circle cx="31" cy="31" r="2" fill="#1a1a1a"/><circle cx="31" cy="17" r="2" fill="#1a1a1a"/><circle cx="17" cy="31" r="2" fill="#1a1a1a"/></svg>',
+  10: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="36" height="24" rx="3"/><path d="M6 34l12-10 6 5 8-7 10 8"/><circle cx="34" cy="18" r="3"/><path d="M16 38h16"/></svg>',
+  11: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8h28v32H10z" rx="2"/><path d="M16 16h16M16 22h16M16 28h10"/><circle cx="34" cy="34" r="6"/><path d="M34 31v4M34 38v0"/></svg>',
+  12: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="32" height="32" rx="4"/><path d="M8 16h32"/><path d="M16 8v8M32 8v8"/><path d="M18 24l3 3 6-6"/><circle cx="18" cy="34" r="1" fill="#1a1a1a"/><circle cx="24" cy="34" r="1" fill="#1a1a1a"/><circle cx="30" cy="34" r="1" fill="#1a1a1a"/></svg>',
+  13: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="24" rx="16" ry="10"/><path d="M12 18v-6M24 14v-6M36 18v-6"/><circle cx="12" cy="10" r="2"/><circle cx="24" cy="6" r="2"/><circle cx="36" cy="10" r="2"/><path d="M16 24h2M22 24h4M30 24h2"/></svg>',
+  14: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8v16"/><path d="M24 24l-12 14"/><path d="M24 24l12 14"/><circle cx="24" cy="8" r="3"/><path d="M8 38l8-4M40 38l-8-4"/></svg>',
+};
+const QUESTION_ICONS_2 = {
+  15: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="18" r="4"/><circle cx="24" cy="18" r="4"/><circle cx="36" cy="18" r="4"/><path d="M12 24v14M24 24v14M36 24v14"/><path d="M30 18l-2-6"/></svg>',
+  16: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="16"/><path d="M24 12v12l8 8"/><path d="M16 6l2 4M32 6l-2 4"/></svg>',
+  17: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="5"/><circle cx="32" cy="16" r="5"/><circle cx="24" cy="30" r="5"/><path d="M20 19l5 7M28 19l-5 7"/><path d="M10 38c2-4 6-6 10-6M28 38c2-4 6-6 10-6"/></svg>',
+  18: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="32" height="24" rx="2"/><path d="M14 16h20M14 22h12"/><path d="M24 32v8M18 40h12"/><circle cx="38" cy="16" r="0" fill="#1a1a1a"/></svg>',
+  19: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="6" width="20" height="36" rx="4"/><path d="M14 12h20M14 36h20"/><path d="M20 20h-1v4h10v-4M22 20v4"/><path d="M20 28h8"/></svg>',
+  20: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6v10M20 16h8l2 6H18l2-6z"/><path d="M18 22v18h12V22"/><path d="M14 40h20"/><path d="M22 28h4M22 34h4"/></svg>',
+  21: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="14" r="5"/><circle cx="32" cy="14" r="5"/><path d="M6 36c0-7 4-12 10-12M32 36c0-7 4-12 10-12"/><path d="M21 26c2-1 4-1 6 0"/><path d="M10 28l3-2M38 28l-3-2"/></svg>',
+  22: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 40V12a4 4 0 014-4h20a4 4 0 014 4v24"/><path d="M8 40h28a4 4 0 004-4V12"/><path d="M8 36c0 2.2 1.8 4 4 4"/><path d="M16 16h12M16 22h8"/></svg>',
+  23: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12h20v6H12z" rx="2"/><path d="M22 12V8"/><path d="M16 24l-4 4 4 4M32 24l4 4-4 4"/><path d="M20 34h8"/><circle cx="24" cy="28" r="1" fill="#1a1a1a"/></svg>',
+  24: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10h16v28H16z" rx="3"/><path d="M16 16h16"/><path d="M20 10V6h8v4"/><path d="M22 22l2 2 4-4M22 30h6"/></svg>',
+  25: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30h36M6 30v6h8v-6M18 30v6h12v-6M34 30v6h8v-6"/><circle cx="16" cy="18" r="5"/><path d="M12 22c-3 2-4 5-4 8M20 22c3 2 4 5 4 8"/></svg>',
+  26: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 38h6v-12h-6zM16 38h6v-18h-6zM26 38h6v-24h-6zM36 38h6v-10h-6z"/><path d="M8 10l10 4 10-4 12 6"/></svg>',
+  27: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8c-8 0-14 6-14 14 0 4 2 8 5 10v8h18v-8c3-2 5-6 5-10 0-8-6-14-14-14z"/><path d="M20 26c1 1 3 2 4 2s3-1 4-2"/><circle cx="20" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="28" cy="20" r="1.5" fill="#1a1a1a"/></svg>',
+  28: '<svg viewBox="0 0 48 48" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8v8"/><path d="M24 16l-10 12M24 16l10 12"/><path d="M14 28l-6 10M34 28l6 10"/><circle cx="24" cy="8" r="3"/><circle cx="8" cy="40" r="2" fill="#1a1a1a"/><circle cx="40" cy="40" r="2" fill="#1a1a1a"/></svg>'
+};
+Object.assign(QUESTION_ICONS, QUESTION_ICONS_2);
+
 const QUESTIONS = [
   {
     id: 1,
@@ -811,6 +870,25 @@ const QUESTIONS = [
     options: [{"text": "所以更要提前规划好，留出余量", "score": 3}, {"text": "计划要有，但也要灵活调整", "score": 2}, {"text": "所以干嘛要计划，顺其自然最好", "score": 1}]
   }
 ];
+const TYPE_ILLUSTRATIONS = {
+  INTJ: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M36 26c2 2 6 2 8 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><rect x="22" y="50" width="8" height="12" rx="2"/><path d="M30 54h6"/><path d="M32 16l4-8M40 14v-6M48 16l-4-8"/></svg>',
+  INTP: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M37 26h6"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><circle cx="58" cy="44" r="8"/><path d="M55 44h6M58 41v6"/><path d="M34 12h12v-2H34z"/></svg>',
+  ENTJ: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="24" r="12"/><circle cx="36" cy="22" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="22" r="1.5" fill="#1a1a1a"/><path d="M36 28c2 2 6 2 8 0"/><path d="M30 36c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M32 8l8-4 8 4-2 6H34l-2-6z"/><path d="M50 50l10-4M52 46l8 4"/></svg>',
+  ENTP: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M35 26c3 3 7 3 10 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M56 14l2-6M60 12l-6 2M58 18l4-2"/><path d="M24 14l-2-6M20 12l6 2M22 18l-4-2"/></svg>',
+  INFJ: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M36 26c2 2 6 2 8 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M40 6l-3 4h6l-3-4z"/><path d="M34 8c-2-2-6-2-6 2s6 4 6 4 6 0 6-4-4-4-6-2"/><path d="M46 8c2-2 6-2 6 2s-6 4-6 4"/></svg>',
+  INFP: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M36 26c2 2 6 2 8 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M58 24c2-2 4 0 4 2s-4 4-4 4-4-2-4-4 2-4 4-2"/><path d="M56 32c-1 2 0 4 2 4"/></svg>',
+  ENFJ: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M35 26c3 3 7 3 10 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M40 4l-2 6h4l-2-6zM32 6l2 4M48 6l-2 4M28 10l4 2M52 10l-4 2"/></svg>',
+  ENFP: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M35 25c3 4 7 4 10 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M28 6l2 4M36 4l1 4M44 4l-1 4M52 6l-2 4"/><circle cx="30" cy="4" r="2"/><circle cx="50" cy="4" r="2"/><circle cx="40" cy="2" r="2"/></svg>',
+  ISTJ: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M37 26h6"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><rect x="48" y="42" width="14" height="18" rx="2"/><path d="M52 48h6M52 52h6M52 56h4"/></svg>',
+  ISFJ: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M36 26c2 2 6 2 8 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M54 40c4-2 8 0 8 4s-8 8-8 8-8-4-8-8 4-6 8-4"/></svg>',
+  ESTJ: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M36 27c2 1 6 1 8 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M52 44v14M56 50l-4-6-4 6M60 58h-12"/></svg>',
+  ESFJ: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M35 26c3 3 7 3 10 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><circle cx="62" cy="36" r="8"/><circle cx="60" cy="34" r="1" fill="#1a1a1a"/><circle cx="64" cy="34" r="1" fill="#1a1a1a"/><path d="M60 38c1 1 3 1 4 0"/></svg>',
+  ISTP: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M37 26h6"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M56 42l-8 8M60 46l-8 8"/><circle cx="52" cy="50" r="4"/></svg>',
+  ISFP: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M36 26c2 2 6 2 8 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M54 40l4 16M58 42l-2 14"/><circle cx="56" cy="38" r="3"/></svg>',
+  ESTP: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M35 25c3 4 7 4 10 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M14 56c8-4 16-10 26-20"/><path d="M10 52c2 2 6 4 8 4"/></svg>',
+  ESFP: '<svg viewBox="0 0 80 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="22" r="12"/><circle cx="36" cy="20" r="1.5" fill="#1a1a1a"/><circle cx="44" cy="20" r="1.5" fill="#1a1a1a"/><path d="M35 25c3 4 7 4 10 0"/><path d="M30 34c-6 4-10 10-10 18v4h40v-4c0-8-4-14-10-18"/><path d="M54 38a6 6 0 016 0 6 6 0 010 8 6 6 0 01-6 0 6 6 0 010-8z"/><path d="M58 38v-4M62 42h4"/></svg>'
+};
+
 const TYPES = {
   "INTJ": {
     name: "建筑师",
@@ -1021,9 +1099,13 @@ function renderQuestion() {
     optionsHtml += `<button class="option-btn${selectedClass}" onclick="selectOption('${q.id}', ${idx})">${opt.text}</button>`;
   });
 
+  const iconSvg = QUESTION_ICONS[q.id] || '';
+  const iconHtml = iconSvg ? `<div class="question-icon">${iconSvg}</div>` : '';
+
   document.getElementById('questionArea').innerHTML = `
     <div class="question-card">
       <div class="question-label">第 ${currentQuestion + 1} 题</div>
+      ${iconHtml}
       <div class="question-text">${q.text}</div>
       <div class="options">${optionsHtml}</div>
     </div>
@@ -1170,7 +1252,7 @@ function renderResult(result) {
 
   document.getElementById('resultContent').innerHTML = `
     <div class="result-main-card">
-      <div class="result-emoji">${typeData.emoji || ''}</div>
+      ${TYPE_ILLUSTRATIONS[result.type] ? '<div class="result-illustration">' + TYPE_ILLUSTRATIONS[result.type] + '</div>' : '<div class="result-emoji">' + (typeData.emoji || '') + '</div>'}
       <div class="result-info">
         <h2>${typeData.name || result.type}</h2>
         <div class="result-code">${result.type}</div>
